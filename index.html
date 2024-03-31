@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+        #todo{
+            display:inline;
+            justify-content: space-between;
+        }
+
+        p{
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            align-items: baseline;
+        }
+    </style>
+</head>
+<body>
+    <h1>TODO List</h1>
+    <input id= "new-task" type="text" placeholder="cosa devi fare?">
+    <button id="new-task-btn">Aggiungi Task</button>
+    <button id="clear-btn">Pulisci Task</button>
+    <div id="todo"></div>
+
+    <script>
+        class TODOList {
+            constructor(){
+                this.tasks = this.caricaTask();
+                this.generaTask();
+                console.log("tasks", this.tasks)
+            }
+
+            aggiungiTask(task){
+                this.tasks.push(task);
+                this.generaNuovoTask(task)
+                // console.log(this.tasks)
+                localStorage.setItem("tasks", JSON.stringify(this.tasks))
+            }
+
+            generaNuovoTask(task){
+                 const todo = document.getElementById('todo')
+                const p = document.createElement('p')
+                const pX = document.createElement('p')
+                pX.style.cursor = "pointer"
+                pX.appendChild(document.createTextNode('X'))
+                p.appendChild(document.createTextNode(task));
+                p.appendChild(pX)
+                todo.appendChild(p)
+                pX.addEventListener("click", (e) => {
+                    this.concludiTask(task)
+                    e.srcElement.parentElement.remove()
+
+                })
+            }
+
+            concludiTask(task){
+              console.log(`${task} completato!`)
+              const index = this.tasks.indexOf(task);
+              this.tasks.splice(index,1)
+              console.log(this.tasks)
+              localStorage.setItem("tasks", JSON.stringify(this.tasks))
+
+                
+            }
+
+            caricaTask(){
+                const tasks = JSON.parse(localStorage.getItem("tasks")) ?? []
+                return tasks
+            }
+
+            generaTask(){
+                this.tasks.forEach(task => {
+                     const todo = document.getElementById('todo')
+                    const p = document.createElement('p')
+                    const pX = document.createElement('p')
+                    pX.style.cursor = "pointer"
+                    pX.appendChild(document.createTextNode('X'))
+                    p.appendChild(document.createTextNode(task));
+                    p.appendChild(pX)
+                    todo.appendChild(p)
+                    pX.addEventListener("click", (e) => {
+                        this.concludiTask(task)
+                        e.srcElement.parentElement.remove()
+
+                    })
+                    
+                });
+            }
+
+            pulisciTask(){
+               localStorage.clear(this.tasks);
+               document.location.reload();
+            }
+        }
+
+
+
+
+
+        document.addEventListener("DOMContentLoaded",() =>{
+            const newTaskBtn = document.getElementById('new-task-btn')
+            const clearBtn = document.getElementById('clear-btn')
+            const input = document.getElementById('new-task')
+
+            const todoList = new TODOList()
+
+
+
+
+
+            newTaskBtn.addEventListener("click", () =>{
+                todoList.aggiungiTask(input.value)
+            })
+
+            clearBtn.addEventListener("click", () =>{
+                todoList.pulisciTask();
+                console.log("clear task")
+            })
+            
+            input.addEventListener("keypress", (e) =>{
+                   if(e.key == 'Enter'){
+                       todoList.aggiungiTask(input.value)
+                       input.value= '';
+                   }
+                
+            })
+
+        })
+    </script>
+</body>
+</html>
